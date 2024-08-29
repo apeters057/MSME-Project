@@ -13,11 +13,9 @@ motors.set_voltage_id(3)
 
 #Set up Motor Direction Speed
 # Motor 1 clockwise at 100% speed
-motors[1].speed(100) #Left
+motors[1].speed(50) #Left
 # Motor 2 clockwise at 100% speed
-motors[2].speed(-100) #Right
-
-motors[3].speed(-100)
+motors[2].speed(50) #Right
 
 # Stop all motors
 time.sleep(3)

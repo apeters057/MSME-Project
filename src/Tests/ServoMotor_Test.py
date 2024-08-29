@@ -3,7 +3,7 @@ sys.path.append('/home/apeters/project/env/src/robot-hat')
 sys.path.append('/home/apeters/project/env/src/Functions')
 
 from robot_hat import Servo
-import MPU6050Plot as MPU
+# import MPU6050Plot as MPU
 # Create Servo object with PWM object
 #servo_CameraYaw = Servo("P0")
 servo_CameraYaw = Servo("P0")
