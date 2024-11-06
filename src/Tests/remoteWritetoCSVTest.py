@@ -141,7 +141,7 @@ def collect_and_log_data(file_path):
         exit_thread.join()
 
 # Specify the file name and path
-file_path = '/home/apeters/project/env/src/Tests/TestData/105_Capacitor/105_UnitStep_PWM100_Test5.csv'
+file_path = '/home/apeters/project/env/src/Tests/TestData/105_Capacitor/VOID.csv'
 collect_and_log_data(file_path)
 
 print(f'Data has been logged to {file_path}')
