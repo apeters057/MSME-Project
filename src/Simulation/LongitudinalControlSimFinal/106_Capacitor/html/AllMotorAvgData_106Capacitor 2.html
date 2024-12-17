@@ -1,0 +1,1426 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>AllMotorAvgData_106Capacitor</title>
+<meta name="generator" content="MATLAB 24.1">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-09-03">
+<meta name="DC.source" content="AllMotorAvgData_106Capacitor.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Load Data</a>
+</li>
+<li>
+<a href="#3">Sort Data into Respective PWM Tests</a>
+</li>
+<li>
+<a href="#4">Calculate Averages of each PWM Tests</a>
+</li>
+<li>
+<a href="#5">Plot Car Response</a>
+</li>
+<li>
+<a href="#6">Formulate Systems T(s) --&gt; Alpha / (Tau*s + 1) =&gt; First Order Dynamics</a>
+</li>
+<li>
+<a href="#7">Fit a line to find Voltage to PWM realation equation -- apply pwm for voltage output</a>
+</li>
+<li>
+<a href="#8">Discrete State Space &amp; Observer Design</a>
+</li>
+<li>
+<a href="#9">Loop over different values of L</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">
+<span class="comment">%Users / anthonypeters / Documents / MATLAB / MSME / Project</span>
+<span class="comment">%/AllMotorAvgData_106Capacitor</span>
+<span class="comment">%Compile all Motor AVG Data</span>
+<span class="comment">% 106 Capacitor = 10 uF</span>
+clc;clear <span class="string">all</span> ;clear; clear <span class="string">figure</span>;close <span class="string">all</span>;
+<span class="comment">%%%%% Longitudunal Control Simulation and System Indentification</span>
+</pre>
+<h2 id="2">Load Data</h2>
+<pre class="codeinput">directory = <span class="string">'/Users/anthonypeters/Documents/MATLAB/MSME/Project/106_Capacitor'</span>;
+baseFileName_50 = <span class="string">'106_UnitStep_PWM50_Test'</span>;
+baseFileName_70 = <span class="string">'106_UnitStep_PWM70_Test'</span>;
+baseFileName_80 = <span class="string">'106_UnitStep_PWM80_Test'</span>;
+baseFileName_90 = <span class="string">'106_UnitStep_PWM90_Test'</span>;
+baseFileName_100 = <span class="string">'106_UnitStep_PWM100_Test'</span>;
+files_50 = dir(fullfile(directory, [baseFileName_50, <span class="string">'*.csv'</span>]));
+files_70 = dir(fullfile(directory, [baseFileName_70, <span class="string">'*.csv'</span>]));
+files_80 = dir(fullfile(directory, [baseFileName_80, <span class="string">'*.csv'</span>]));
+files_90 = dir(fullfile(directory, [baseFileName_90, <span class="string">'*.csv'</span>]));
+files_100 = dir(fullfile(directory, [baseFileName_100, <span class="string">'*.csv'</span>]));
+AllData_50 = cell(1, numel(files_50));
+AllData_70 = cell(1, numel(files_70));
+AllData_80 = cell(1, numel(files_80));
+AllData_90 = cell(1, numel(files_90));
+AllData_100 = cell(1, numel(files_100));
+
+<span class="keyword">for</span> i = 1:numel(files_50)
+
+    filename_50 = fullfile(directory, files_50(i).name);
+    filename_70 = fullfile(directory, files_70(i).name);
+    filename_80 = fullfile(directory, files_80(i).name);
+    filename_90 = fullfile(directory, files_90(i).name);
+    filename_100 = fullfile(directory, files_100(i).name);
+
+    data_50 = readmatrix(filename_50); <span class="comment">% Adjust loading method according to your file format</span>
+    data_70 = readmatrix(filename_70);
+    data_80 = readmatrix(filename_80);
+    data_90 = readmatrix(filename_90);
+    data_100 = readmatrix(filename_100);
+
+    AllData_50{i} = data_50;
+    AllData_70{i} = data_70;
+    AllData_80{i} = data_80;
+    AllData_90{i} = data_90;
+    AllData_100{i} = data_100;
+
+<span class="keyword">end</span>
+</pre>
+<h2 id="3">Sort Data into Respective PWM Tests</h2>
+<pre class="codeinput">distance = 2.13; <span class="comment">%m % = 6.9 feet</span>
+speed_total_50 = 0 ;
+speed_total_70 = 0 ;
+speed_total_80 = 0 ;
+speed_total_90 = 0 ;
+speed_total_100 = 0 ;
+
+<span class="keyword">for</span> i = 1:numel(files_50)
+
+    time_50{i} = AllData_50{i}(:,1);
+    time_70{i} = AllData_70{i}(:,1);
+    time_80{i} = AllData_80{i}(:,1);
+    time_90{i} = AllData_90{i}(:,1);
+    time_100{i} = AllData_100{i}(:,1);
+
+    start_signal_50{i} = AllData_50{i}(:,2);
+    start_signal_70{i} = AllData_70{i}(:,2);
+    start_signal_80{i} = AllData_80{i}(:,2);
+    start_signal_90{i} = AllData_90{i}(:,2);
+    start_signal_100{i} = AllData_100{i}(:,2);
+
+    motor_voltage_50{i} = AllData_50{i}(:,3);
+    motor_voltage_70{i} = AllData_70{i}(:,3);
+    motor_voltage_80{i} = AllData_80{i}(:,3);
+    motor_voltage_90{i} = AllData_90{i}(:,3);
+    motor_voltage_100{i} = AllData_100{i}(:,3);
+
+    accel_X_50{i} = AllData_50{i}(:,4);
+    accel_X_70{i} = AllData_70{i}(:,4);
+    accel_X_80{i} = AllData_80{i}(:,4);
+    accel_X_90{i} = AllData_90{i}(:,4);
+    accel_X_100{i} = AllData_100{i}(:,4);
+
+    accel_Y_50{i} = AllData_50{i}(:,5);
+    accel_Y_70{i} = AllData_70{i}(:,5);
+    accel_Y_80{i} = AllData_80{i}(:,5);
+    accel_Y_90{i} = AllData_90{i}(:,5);
+    accel_Y_100{i} = AllData_100{i}(:,5);
+
+    battery_voltage_50{i} = AllData_50{i}(:,6);
+    battery_voltage_70{i} = AllData_70{i}(:,6);
+    battery_voltage_80{i} = AllData_80{i}(:,6);
+    battery_voltage_90{i} = AllData_90{i}(:,6);
+    battery_voltage_100{i} = AllData_100{i}(:,6);
+
+    driving_50{i} = find(start_signal_50{i} == 1);
+    driving_70{i} = find(start_signal_70{i} == 1);
+    driving_80{i} = find(start_signal_80{i} == 1);
+    driving_90{i} = find(start_signal_90{i} == 1);
+    driving_100{i} = find(start_signal_100{i} == 1);
+
+    motor_voltage_driving_50{i} = motor_voltage_50{i}(driving_50{i},:);
+    motor_voltage_driving_70{i} = motor_voltage_70{i}(driving_70{i},:);
+    motor_voltage_driving_80{i} = motor_voltage_80{i}(driving_80{i},:);
+    motor_voltage_driving_90{i} = motor_voltage_90{i}(driving_90{i},:);
+    motor_voltage_driving_100{i} = motor_voltage_100{i}(driving_100{i},:);
+
+    accelX_driving_50{i} = accel_X_50{i}(driving_50{i},:);
+    accelX_driving_70{i} = accel_X_70{i}(driving_70{i},:);
+    accelX_driving_80{i} = accel_X_80{i}(driving_80{i},:);
+    accelX_driving_90{i} = accel_X_90{i}(driving_90{i},:);
+    accelX_driving_100{i} = accel_X_100{i}(driving_100{i},:);
+
+    accelY_driving_50{i} = accel_Y_50{i}(driving_50{i},:);
+    accelY_driving_70{i} = accel_Y_70{i}(driving_70{i},:);
+    accelY_driving_80{i} = accel_Y_80{i}(driving_80{i},:);
+    accelY_driving_90{i} = accel_Y_90{i}(driving_90{i},:);
+    accelY_driving_100{i} = accel_Y_100{i}(driving_100{i},:);
+
+    battery_voltage_driving_50{i} = battery_voltage_50{i}(driving_50{i},:);
+    battery_voltage_driving_70{i} = battery_voltage_70{i}(driving_70{i},:);
+    battery_voltage_driving_80{i} = battery_voltage_80{i}(driving_80{i},:);
+    battery_voltage_driving_90{i} = battery_voltage_90{i}(driving_90{i},:);
+    battery_voltage_driving_100{i} = battery_voltage_100{i}(driving_100{i},:);
+
+    Time_driving_50{i} = time_50{i}(driving_50{i},:);
+    Time_driving_70{i} = time_70{i}(driving_70{i},:);
+    Time_driving_80{i} = time_80{i}(driving_80{i},:);
+    Time_driving_90{i} = time_90{i}(driving_90{i},:);
+    Time_driving_100{i} = time_100{i}(driving_100{i},:);
+
+    t_50{i} = Time_driving_50{i} - Time_driving_50{i}(1);
+    t_70{i} = Time_driving_70{i} - Time_driving_70{i}(1);
+    t_80{i} = Time_driving_80{i} - Time_driving_80{i}(1);
+    t_90{i} = Time_driving_90{i} - Time_driving_90{i}(1);
+    t_100{i} = Time_driving_100{i} - Time_driving_100{i}(1);
+
+<span class="keyword">end</span>
+</pre>
+<h2 id="4">Calculate Averages of each PWM Tests</h2>
+<pre class="codeinput">
+<span class="comment">%%%ReSizeMatrixes to take averages</span>
+motor_voltage_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_50));
+motor_voltage_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_50));
+motor_voltage_driving_Sum_50 = zeros(motor_voltage_driving_maxRows_50, motor_voltage_driving_maxCols_50);
+motor_voltage_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_70));
+motor_voltage_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_70));
+motor_voltage_driving_Sum_70 = zeros(motor_voltage_driving_maxRows_70, motor_voltage_driving_maxCols_70);
+motor_voltage_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_80));
+motor_voltage_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_80));
+motor_voltage_driving_Sum_80 = zeros(motor_voltage_driving_maxRows_80, motor_voltage_driving_maxCols_80);
+motor_voltage_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_90));
+motor_voltage_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_90));
+motor_voltage_driving_Sum_90 = zeros(motor_voltage_driving_maxRows_90, motor_voltage_driving_maxCols_90);
+motor_voltage_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_100));
+motor_voltage_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_100));
+motor_voltage_driving_Sum_100 = zeros(motor_voltage_driving_maxRows_100, motor_voltage_driving_maxCols_100);
+
+accelX_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), accelX_driving_50));
+accelX_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), accelX_driving_50));
+accelX_driving_Sum_50 = zeros(accelX_driving_maxRows_50, accelX_driving_maxCols_50);
+accelX_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), accelX_driving_70));
+accelX_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), accelX_driving_70));
+accelX_driving_Sum_70 = zeros(accelX_driving_maxRows_70, accelX_driving_maxCols_70);
+accelX_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), accelX_driving_80));
+accelX_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), accelX_driving_80));
+accelX_driving_Sum_80 = zeros(accelX_driving_maxRows_80, accelX_driving_maxCols_80);
+accelX_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), accelX_driving_90));
+accelX_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), accelX_driving_90));
+accelX_driving_Sum_90 = zeros(accelX_driving_maxRows_90, accelX_driving_maxCols_90);
+accelX_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), accelX_driving_100));
+accelX_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), accelX_driving_100));
+accelX_driving_Sum_100 = zeros(accelX_driving_maxRows_100, accelX_driving_maxCols_100);
+
+accelY_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), accelY_driving_50));
+accelY_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), accelY_driving_50));
+accelY_driving_Sum_50 = zeros(accelY_driving_maxRows_50, accelY_driving_maxCols_50);
+accelY_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), accelY_driving_70));
+accelY_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), accelY_driving_70));
+accelY_driving_Sum_70 = zeros(accelY_driving_maxRows_70, accelY_driving_maxCols_70);
+accelY_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), accelY_driving_80));
+accelY_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), accelY_driving_80));
+accelY_driving_Sum_80 = zeros(accelY_driving_maxRows_80, accelY_driving_maxCols_80);
+accelY_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), accelY_driving_90));
+accelY_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), accelY_driving_90));
+accelY_driving_Sum_90 = zeros(accelY_driving_maxRows_90, accelY_driving_maxCols_90);
+accelY_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), accelY_driving_100));
+accelY_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), accelY_driving_100));
+accelY_driving_Sum_100 = zeros(accelY_driving_maxRows_100, accelY_driving_maxCols_100);
+
+battery_voltage_driving_maxRows_50 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_50));
+battery_voltage_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_50));
+battery_voltage_driving_Sum_50 = zeros(battery_voltage_driving_maxRows_50, battery_voltage_driving_maxCols_50);
+battery_voltage_driving_maxRows_70 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_70));
+battery_voltage_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_70));
+battery_voltage_driving_Sum_70 = zeros(battery_voltage_driving_maxRows_70, battery_voltage_driving_maxCols_70);
+battery_voltage_driving_maxRows_80 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_80));
+battery_voltage_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_80));
+battery_voltage_driving_Sum_80 = zeros(battery_voltage_driving_maxRows_80, battery_voltage_driving_maxCols_80);
+battery_voltage_driving_maxRows_90 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_90));
+battery_voltage_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_90));
+battery_voltage_driving_Sum_90 = zeros(battery_voltage_driving_maxRows_90, battery_voltage_driving_maxCols_90);
+battery_voltage_driving_maxRows_100 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_100));
+battery_voltage_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_100));
+battery_voltage_driving_Sum_100 = zeros(battery_voltage_driving_maxRows_100, battery_voltage_driving_maxCols_100);
+
+t_maxRows_50 = max(cellfun(@(x) size(x, 1),t_50));
+t_maxCols_50 = max(cellfun(@(x) size(x, 2), t_50));
+t_Sum_50 = zeros(t_maxRows_50, t_maxCols_50);<span class="comment">% Initialize a variable to store the total sum</span>
+t_maxRows_70 = max(cellfun(@(x) size(x, 1),t_70));
+t_maxCols_70 = max(cellfun(@(x) size(x, 2), t_70));
+t_Sum_70 = zeros(t_maxRows_70, t_maxCols_70);<span class="comment">% Initialize a variable to store the total sum</span>
+t_maxRows_70 = max(cellfun(@(x) size(x, 1),t_70));
+t_maxCols_70 = max(cellfun(@(x) size(x, 2), t_70));
+t_Sum_70 = zeros(t_maxRows_70, t_maxCols_70);<span class="comment">% Initialize a variable to store the total sum</span>
+t_maxRows_80 = max(cellfun(@(x) size(x, 1),t_80));
+t_maxCols_80 = max(cellfun(@(x) size(x, 2), t_80));
+t_Sum_80 = zeros(t_maxRows_80, t_maxCols_80);<span class="comment">% Initialize a variable to store the total sum</span>
+t_maxRows_90 = max(cellfun(@(x) size(x, 1),t_90));
+t_maxCols_90 = max(cellfun(@(x) size(x, 2), t_90));
+t_Sum_90 = zeros(t_maxRows_90, t_maxCols_90);<span class="comment">% Initialize a variable to store the total sum</span>
+t_maxRows_100 = max(cellfun(@(x) size(x, 1),t_100));
+t_maxCols_100 = max(cellfun(@(x) size(x, 2), t_100));
+t_Sum_100 = zeros(t_maxRows_100, t_maxCols_100);<span class="comment">% Initialize a variable to store the total sum</span>
+
+<span class="keyword">for</span> i = 1:numel(files_50)
+<span class="comment">%</span>
+ motor_voltage_driving_Data_50 = imresize(motor_voltage_driving_50{i}, [motor_voltage_driving_maxRows_50, motor_voltage_driving_maxCols_50]);
+ motor_voltage_driving_Sum_50 = motor_voltage_driving_Sum_50 + motor_voltage_driving_Data_50;
+ motor_voltage_driving_Data_70 = imresize(motor_voltage_driving_70{i}, [motor_voltage_driving_maxRows_70, motor_voltage_driving_maxCols_70]);
+ motor_voltage_driving_Sum_70 = motor_voltage_driving_Sum_70 + motor_voltage_driving_Data_70;
+ motor_voltage_driving_Data_80 = imresize(motor_voltage_driving_80{i}, [motor_voltage_driving_maxRows_80, motor_voltage_driving_maxCols_80]);
+ motor_voltage_driving_Sum_80 = motor_voltage_driving_Sum_80 + motor_voltage_driving_Data_80;
+ motor_voltage_driving_Data_90 = imresize(motor_voltage_driving_90{i}, [motor_voltage_driving_maxRows_90, motor_voltage_driving_maxCols_90]);
+ motor_voltage_driving_Sum_90 = motor_voltage_driving_Sum_90 + motor_voltage_driving_Data_90;
+ motor_voltage_driving_Data_100 = imresize(motor_voltage_driving_100{i}, [motor_voltage_driving_maxRows_100, motor_voltage_driving_maxCols_100]);
+ motor_voltage_driving_Sum_100 = motor_voltage_driving_Sum_100 + motor_voltage_driving_Data_100;
+
+<span class="comment">%</span>
+ accelX_driving_Data_50 = imresize(accelX_driving_50{i}, [accelX_driving_maxRows_50, accelX_driving_maxCols_50]);
+ accelX_driving_Sum_50 = accelX_driving_Sum_50 + accelX_driving_Data_50;
+ accelY_driving_Data_50 = imresize(accelX_driving_50{i}, [accelY_driving_maxRows_50, accelY_driving_maxCols_50]);
+ accelY_driving_Sum_50 = accelY_driving_Sum_50 + accelY_driving_Data_50;
+
+ accelX_driving_Data_70 = imresize(accelX_driving_70{i}, [accelX_driving_maxRows_70, accelX_driving_maxCols_70]);
+ accelX_driving_Sum_70 = accelX_driving_Sum_70 + accelX_driving_Data_70;
+ accelY_driving_Data_70 = imresize(accelX_driving_70{i}, [accelY_driving_maxRows_70, accelY_driving_maxCols_70]);
+ accelY_driving_Sum_70 = accelY_driving_Sum_70 + accelY_driving_Data_70;
+
+ accelX_driving_Data_80 = imresize(accelX_driving_80{i}, [accelX_driving_maxRows_80, accelX_driving_maxCols_80]);
+ accelX_driving_Sum_80 = accelX_driving_Sum_80 + accelX_driving_Data_80;
+ accelY_driving_Data_80 = imresize(accelX_driving_80{i}, [accelY_driving_maxRows_80, accelY_driving_maxCols_80]);
+ accelY_driving_Sum_80 = accelY_driving_Sum_80 + accelY_driving_Data_80;
+
+ accelX_driving_Data_90 = imresize(accelX_driving_90{i}, [accelX_driving_maxRows_90, accelX_driving_maxCols_90]);
+ accelX_driving_Sum_90 = accelX_driving_Sum_90 + accelX_driving_Data_90;
+ accelY_driving_Data_90 = imresize(accelX_driving_90{i}, [accelY_driving_maxRows_90, accelY_driving_maxCols_90]);
+ accelY_driving_Sum_90 = accelY_driving_Sum_90 + accelY_driving_Data_90;
+
+ accelX_driving_Data_100 = imresize(accelX_driving_100{i}, [accelX_driving_maxRows_100, accelX_driving_maxCols_100]);
+ accelX_driving_Sum_100 = accelX_driving_Sum_100 + accelX_driving_Data_100;
+ accelY_driving_Data_100 = imresize(accelX_driving_100{i}, [accelY_driving_maxRows_100, accelY_driving_maxCols_100]);
+ accelY_driving_Sum_100 = accelY_driving_Sum_100 + accelY_driving_Data_100;
+<span class="comment">%</span>
+ battery_voltage_driving_Data_50 = imresize(battery_voltage_driving_50{i}, [battery_voltage_driving_maxRows_50, battery_voltage_driving_maxCols_50]);
+ battery_voltage_driving_Sum_50 = battery_voltage_driving_Sum_50 + battery_voltage_driving_Data_50;
+ battery_voltage_driving_Data_70 = imresize(battery_voltage_driving_70{i}, [battery_voltage_driving_maxRows_70, battery_voltage_driving_maxCols_70]);
+ battery_voltage_driving_Sum_70 = battery_voltage_driving_Sum_70 + battery_voltage_driving_Data_70;
+ battery_voltage_driving_Data_80 = imresize(battery_voltage_driving_80{i}, [battery_voltage_driving_maxRows_80, battery_voltage_driving_maxCols_80]);
+ battery_voltage_driving_Sum_80 = battery_voltage_driving_Sum_80 + battery_voltage_driving_Data_80;
+ battery_voltage_driving_Data_90 = imresize(battery_voltage_driving_90{i}, [battery_voltage_driving_maxRows_90, battery_voltage_driving_maxCols_90]);
+ battery_voltage_driving_Sum_90 = battery_voltage_driving_Sum_90 + battery_voltage_driving_Data_90;
+ battery_voltage_driving_Data_100 = imresize(battery_voltage_driving_100{i}, [battery_voltage_driving_maxRows_100, battery_voltage_driving_maxCols_100]);
+ battery_voltage_driving_Sum_100 = battery_voltage_driving_Sum_100 + battery_voltage_driving_Data_100;
+
+ t_Data_50 = imresize(t_50{i}, [t_maxRows_50, t_maxCols_50]);
+ t_Sum_50 = t_Sum_50 + t_Data_50;
+ t_Data_70 = imresize(t_70{i}, [t_maxRows_70, t_maxCols_70]);
+ t_Sum_70 = t_Sum_70 + t_Data_70;
+ t_Data_80 = imresize(t_80{i}, [t_maxRows_80, t_maxCols_80]);
+ t_Sum_80 = t_Sum_80 + t_Data_80;
+ t_Data_90 = imresize(t_90{i}, [t_maxRows_90, t_maxCols_90]);
+ t_Sum_90 = t_Sum_90 + t_Data_90;
+ t_Data_100 = imresize(t_100{i}, [t_maxRows_100, t_maxCols_100]);
+ t_Sum_100 = t_Sum_100 + t_Data_100;
+
+ speed_50{i} = distance / max(t_50{i}); <span class="comment">%m/s</span>
+ speed_total_50 =(speed_total_50 +speed_50{i}) ;
+ speed_70{i} = distance / max(t_70{i});
+ speed_total_70 = (speed_total_70 + speed_70{i});
+ speed_80{i} = distance / max(t_80{i});
+ speed_total_80 = (speed_total_80 + speed_80{i});
+ speed_90{i} = distance / max(t_90{i});
+ speed_total_90 = (speed_total_90 + speed_90{i});
+ speed_100{i} = distance / max(t_100{i});
+ speed_total_100 = (speed_total_100 + speed_100{i});
+
+<span class="keyword">end</span>
+<span class="comment">%PWM 50</span>
+motor_voltage_driving_average_50 = motor_voltage_driving_Sum_50 / i;
+accelX_driving_average_50 =accelX_driving_Sum_50 / i;
+accelY_driving_average_50 =accelY_driving_Sum_50 / i;
+battery_voltage_driving_average_50 = battery_voltage_driving_Sum_50 /i;
+t_average_50 = t_Sum_50 / i;
+speed_avg_50 = speed_total_50 /i ;
+
+<span class="comment">%PWM 70</span>
+motor_voltage_driving_average_70 = motor_voltage_driving_Sum_70 / i;
+accelX_driving_average_70 = accelX_driving_Sum_70 / i;
+accelY_driving_average_70 = accelY_driving_Sum_70 / i;
+battery_voltage_driving_average_70 = battery_voltage_driving_Sum_70 / i;
+t_average_70 = t_Sum_70 / i;
+speed_avg_70 = speed_total_70 / i;
+
+<span class="comment">%PWM 80</span>
+motor_voltage_driving_average_80 = motor_voltage_driving_Sum_80 / i;
+accelX_driving_average_80 = accelX_driving_Sum_80 / i;
+accelY_driving_average_80 = accelY_driving_Sum_80 / i;
+battery_voltage_driving_average_80 = battery_voltage_driving_Sum_80 / i;
+t_average_80 = t_Sum_80 / i;
+speed_avg_80 = speed_total_80 / i;
+
+<span class="comment">%PWM 90</span>
+motor_voltage_driving_average_90 = motor_voltage_driving_Sum_90 / i;
+accelX_driving_average_90 = accelX_driving_Sum_90 / i;
+accelY_driving_average_90 = accelY_driving_Sum_90 / i;
+battery_voltage_driving_average_90 = battery_voltage_driving_Sum_90 / i;
+t_average_90 = t_Sum_90 / i;
+speed_avg_90 = speed_total_90 / i;
+
+<span class="comment">%PWM 100</span>
+motor_voltage_driving_average_100 = motor_voltage_driving_Sum_100 / i;
+accelX_driving_average_100 = accelX_driving_Sum_100 / i;
+accelY_driving_average_100 = accelY_driving_Sum_100 / i;
+battery_voltage_driving_average_100 = battery_voltage_driving_Sum_100 / i;
+t_average_100 = t_Sum_100 / i;
+speed_avg_100 = speed_total_100 / i;
+</pre>
+<h2 id="5">Plot Car Response</h2>
+<pre class="codeinput">figure(1);
+subplot(2, 1, 1);hold <span class="string">off</span>;
+plot(t_average_50 , motor_voltage_driving_average_50,<span class="string">'b'</span>,<span class="string">'LineWidth'</span>, 2);  <span class="comment">%Voltage Response</span>
+hold <span class="string">on</span>;
+plot(t_average_70, motor_voltage_driving_average_70,<span class="string">'g'</span>,<span class="string">'LineWidth'</span>, 2); <span class="comment">%hold on;</span>
+plot(t_average_80, motor_voltage_driving_average_80,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>, 2); <span class="comment">%hold on;</span>
+plot(t_average_90, motor_voltage_driving_average_90,<span class="string">'c'</span>,<span class="string">'LineWidth'</span>, 2);<span class="comment">% hold on;</span>
+plot(t_average_100, motor_voltage_driving_average_100,<span class="string">'m'</span>,<span class="string">'LineWidth'</span>, 2); <span class="comment">%hold on;</span>
+title(<span class="string">'Avg Motor Voltage (10 uF)'</span>, <span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'Avg Time [s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20)
+ylabel(<span class="string">'Avg Voltage [V]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20)
+grid <span class="string">on</span>
+legend(<span class="string">'50% PWM'</span>,<span class="string">'70% PWM'</span>,<span class="string">'80% PWM'</span>,<span class="string">'90% PWM'</span>, <span class="string">'100% PWM'</span>,<span class="string">'Fontsize'</span>,20)
+
+subplot(2, 1, 2);hold <span class="string">off</span>;
+plot(t_average_50 ,accelX_driving_average_50, <span class="string">'b'</span>); <span class="comment">%Acceleration Response</span>
+hold <span class="string">on</span>;
+plot(t_average_70, accelX_driving_average_70, <span class="string">'g'</span>);<span class="comment">%hold on;</span>
+plot(t_average_80, accelX_driving_average_80, <span class="string">'r'</span>);<span class="comment">%hold on;</span>
+plot(t_average_90, accelX_driving_average_90, <span class="string">'c'</span>);<span class="comment">%hold on;</span>
+plot(t_average_100, accelX_driving_average_100, <span class="string">'m'</span>);<span class="comment">%hold on;</span>
+title(<span class="string">'Avg. Foward Car Acceleration with (10 uF)'</span>, <span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'Avg. Time [s]'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20)
+ylabel(<span class="string">'Avg. Acceleration [m/s^2]'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20)
+legend(<span class="string">'50% PWM'</span>,<span class="string">'70% PWM'</span>,<span class="string">'80% PWM'</span>,<span class="string">'90% PWM'</span>, <span class="string">'100% PWM'</span>,<span class="string">'FontSize'</span>,20)
+grid <span class="string">on</span>
+</pre>
+<img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_01.png" alt=""> <h2 id="6">Formulate Systems T(s) --&gt; Alpha / (Tau*s + 1) =&gt; First Order Dynamics</h2>
+<p>Alpha = Steady State Speed / V_ss Find Time constant Tau -&gt; Motor to reach 63% of its steady state value -- Speed</p>
+<pre class="codeinput">pwm = [50 , 70 , 80 , 90 , 100] ;
+<span class="comment">%FIND Steady State Voltage</span>
+
+<span class="comment">%Take the last 80% of Motor Voltage and calculate Avg Steady State Value</span>
+start_index_50 = ceil(0.8 * motor_voltage_driving_maxRows_50);
+start_index_70 = ceil(0.8 * motor_voltage_driving_maxRows_70);
+start_index_80 = ceil(0.8 * motor_voltage_driving_maxRows_80);
+start_index_90 = ceil(0.8 * motor_voltage_driving_maxRows_90);
+start_index_100 = ceil(0.8 * motor_voltage_driving_maxRows_100);
+
+last_80_percent_50 = motor_voltage_driving_average_50(start_index_50:end);
+last_80_percent_70 = motor_voltage_driving_average_70(start_index_70:end);
+last_80_percent_80 = motor_voltage_driving_average_80(start_index_80:end);
+last_80_percent_90 = motor_voltage_driving_average_90(start_index_90:end);
+last_80_percent_100 = motor_voltage_driving_average_100(start_index_100:end);
+
+V_ss_50 = mean(last_80_percent_50);
+V_ss_70  = mean(last_80_percent_70);
+V_ss_80 = mean(last_80_percent_80);
+V_ss_90 = mean(last_80_percent_90);
+V_ss_100 = mean(last_80_percent_100);
+
+V_ss = [V_ss_50,V_ss_70,V_ss_80,V_ss_90,V_ss_100];
+
+<span class="comment">% Find Steady State Speed --From Integrated Values</span>
+<span class="comment">%Integrate Accel X</span>
+Vel_Integrate_50 = cumsum([diff(t_average_50) ; 0].* accelX_driving_average_50) ;
+Vel_Integrate_70 = cumsum([diff(t_average_70) ; 0].* accelX_driving_average_70) ;
+Vel_Integrate_80 = cumsum([diff(t_average_80) ; 0].* accelX_driving_average_80) ;
+Vel_Integrate_90 = cumsum([diff(t_average_90) ; 0].* accelX_driving_average_90) ;
+Vel_Integrate_100 = cumsum([diff(t_average_100) ; 0].* accelX_driving_average_100) ;
+
+<span class="comment">%Take the last 80% of Motor Voltage and calculate Avg Steady State Value</span>
+Velocity_last_80_percent_50 = Vel_Integrate_50(start_index_50:end) ;
+Velocity_last_80_percent_70 = Vel_Integrate_70(start_index_70:end) ;
+Velocity_last_80_percent_80 = Vel_Integrate_80(start_index_80:end) ;
+Velocity_last_80_percent_90 = Vel_Integrate_90(start_index_90:end) ;
+Velocity_last_80_percent_100 = Vel_Integrate_100(start_index_100:end) ;
+
+<span class="comment">%Calculate Steady State by taking the avg of the last 80% Values</span>
+Velocity_SS_50 = mean (Velocity_last_80_percent_50);
+Velocity_SS_70 = mean (Velocity_last_80_percent_70);
+Velocity_SS_80 = mean (Velocity_last_80_percent_80);
+Velocity_SS_90 = mean (Velocity_last_80_percent_90);
+Velocity_SS_100 = mean (Velocity_last_80_percent_100);
+
+
+<span class="comment">%Find Velocity at Tau</span>
+Velocity_tau_50 = 0.632*Velocity_SS_50;
+Velocity_tau_70 = 0.632*Velocity_SS_70;
+Velocity_tau_80 = 0.632*Velocity_SS_80;
+Velocity_tau_90 = 0.632*Velocity_SS_90;
+Velocity_tau_100 = 0.632*Velocity_SS_100;
+
+
+
+<span class="comment">%Data Processing</span>
+Vel_Integrate_50_unique = unique(Vel_Integrate_50);
+Vel_Integrate_70_unique = unique(Vel_Integrate_70);
+Vel_Integrate_80_unique = unique(Vel_Integrate_80);
+Vel_Integrate_90_unique = unique(Vel_Integrate_90);
+Vel_Integrate_100_unique = unique(Vel_Integrate_100);
+
+t_average_50_removed = t_average_50(1:end-1, :);
+t_average_70_removed = t_average_70(1:end-1, :);
+t_average_80_removed = t_average_80(1:end-1, :);
+t_average_90_removed = t_average_90(1:end-1, :);
+t_average_100_removed = t_average_100(1:end-1, :);
+
+<span class="comment">%Find Tau</span>
+tau_50 = interp1(Vel_Integrate_50_unique, t_average_50_removed, Velocity_tau_50, <span class="string">'linear'</span>); <span class="comment">%[s]</span>
+tau_70 = interp1(Vel_Integrate_70_unique, t_average_70_removed, Velocity_tau_70, <span class="string">'linear'</span>); <span class="comment">%[s]</span>
+tau_80 = interp1(Vel_Integrate_80_unique, t_average_80_removed, Velocity_tau_80, <span class="string">'linear'</span>); <span class="comment">%[s]</span>
+tau_90 = interp1(Vel_Integrate_90_unique, t_average_90_removed, Velocity_tau_90, <span class="string">'linear'</span>); <span class="comment">%[s]</span>
+tau_100 = interp1(Vel_Integrate_100_unique, t_average_100_removed, Velocity_tau_100, <span class="string">'linear'</span>); <span class="comment">%[s]</span>
+
+tau = [tau_50 , tau_70 ,tau_80, tau_90, tau_100];
+
+<span class="comment">% Find Alpha (Estimated Speed with IMU) - so Bad</span>
+<span class="comment">% alpha_50 = Velocity_SS_50 / V_ss_50 ;</span>
+<span class="comment">% alpha_70 = Velocity_SS_70 / V_ss_70 ;</span>
+<span class="comment">% alpha_80 = Velocity_SS_80 / V_ss_80 ;</span>
+<span class="comment">% alpha_90 = Velocity_SS_90 / V_ss_90 ;</span>
+<span class="comment">% alpha_100 = Velocity_SS_100 / V_ss_100 ; hold off</span>
+
+<span class="comment">% %Find Alpha (HandCalculation)</span>
+alpha_50 = speed_avg_50 / V_ss_50 ;
+alpha_70 = speed_avg_70 / V_ss_70 ;
+alpha_80 = speed_avg_80 / V_ss_80 ;
+alpha_90 = speed_avg_90 / V_ss_90 ;
+alpha_100 = speed_avg_100 / V_ss_100 ; hold <span class="string">off</span>
+
+alpha = [alpha_50, alpha_70, alpha_80, alpha_90, alpha_100] ;
+
+
+figure(2);
+plot(t_average_50, Vel_Integrate_50,<span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>
+plot(t_average_70, Vel_Integrate_70,<span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>
+plot(t_average_80, Vel_Integrate_80,<span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>
+plot(t_average_90, Vel_Integrate_90,<span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>
+plot(t_average_100, Vel_Integrate_100,<span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>
+
+
+title(<span class="string">"Car Velocity - Integrated by AccelX Data"</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'Time [s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'Speed [m/s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+legend(<span class="string">'Velocity at PWM 50'</span>, <span class="string">'Velocity at PWM 70'</span>, <span class="string">'Velocity at PWM 80'</span>, <span class="string">'Velocity at PWM 90'</span>, <span class="string">'Velocity at PWM 100'</span>,<span class="string">'FontSize'</span>,20)
+grid <span class="string">on</span>
+
+
+figure(3); <span class="comment">%Tau</span>
+
+mean_alpha = mean(alpha);
+mean_tau =mean(tau);
+<span class="comment">%mean_tau = .12 ;</span>
+
+subplot(2,1,1); <span class="comment">%Plot alphas and Alpha Mean</span>
+plot(pwm, alpha,<span class="string">'x'</span>,<span class="string">'LineWidth'</span>,2); hold <span class="string">on</span>
+y_limits = ylim;
+plot(xlim, [mean_alpha, mean_alpha], <span class="string">'--g'</span>, <span class="string">'LineWidth'</span>, 2); hold <span class="string">off</span><span class="comment">% Plot the mean line</span>
+ylim(y_limits); <span class="comment">% Restore Ylim</span>
+title(<span class="string">'Alpha = Speed_S_S / V_S_S'</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'PWM [%]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'Alpha - [ m/(s*V) ]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+legend(<span class="string">'Alpha'</span>,<span class="string">"Alpha Mean"</span>,<span class="string">'FontSize'</span>,20) <span class="comment">%%% Outlier in PWM 50 alpha check Data Aquistion</span>
+text(60, mean_alpha+.01, [<span class="string">'Mean = '</span>, num2str(mean_alpha)], <span class="string">'FontSize'</span>, 15, <span class="string">'Color'</span>, <span class="string">'black'</span>);
+grid <span class="string">on</span>
+
+subplot(2,1,2); <span class="comment">%%Plot Tau and Tau Mean</span>
+plot(pwm, tau,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2);hold <span class="string">on</span>
+y_limits = ylim;
+plot(xlim, [mean_tau, mean_tau], <span class="string">'--g'</span>, <span class="string">'LineWidth'</span>, 2); hold <span class="string">off</span><span class="comment">% Plot the mean line</span>
+ylim(y_limits);
+title(<span class="string">'Tau = t @ .632*Velocity_S_S'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'Tau [.632*Velocity_s_s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'PWM [%]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+legend(<span class="string">'Tau'</span>,<span class="string">"Tau Mean"</span>,<span class="string">'FontSize'</span>,20)
+text(60, mean_tau+.01, [<span class="string">'Mean = '</span>, num2str(mean_tau)], <span class="string">'FontSize'</span>, 15, <span class="string">'Color'</span>, <span class="string">'black'</span>);
+grid <span class="string">on</span>
+</pre>
+<img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_02.png" alt=""> <img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_03.png" alt=""> <h2 id="7">Fit a line to find Voltage to PWM realation equation -- apply pwm for voltage output</h2>
+<pre class="codeinput">v = [0 , V_ss_50, V_ss_70, V_ss_80 ,V_ss_90,V_ss_100];
+<span class="comment">%v = [ 0 , .2375, .3317 , .3775 , .4262, .4709] ; %Graphical Estimate</span>
+pwm = [0, 50 , 70 , 80 , 90 , 100] ;
+figure(4);
+plot(pwm,v,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,10,<span class="keyword">...</span>
+    <span class="string">'MarkerEdgeColor'</span>,<span class="string">'red'</span>,<span class="keyword">...</span>
+    <span class="string">'MarkerFaceColor'</span>,[1 .6 .6])
+title(<span class="string">'Voltage vs PWM'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'Voltage [V]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+xlabel(<span class="string">'PWM%'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20)
+grid <span class="string">on</span>
+</pre>
+<img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_04.png" alt=""> <img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_05.png" alt=""> <h2 id="8">Discrete State Space &amp; Observer Design</h2>
+<pre class="codeinput">
+<span class="comment">%Continous State Space Model - Used for Discrete Model</span>
+
+<span class="comment">%mean_tau = .12 ; %%CHANGE TAU TO Fit Velocity!</span>
+<span class="comment">%mean_alpha = .954 ; %%CHANGE TAU TO Fit Velocity!</span>
+A = - 1/ mean_tau;
+B = mean_alpha / mean_tau;
+C = A;
+D = B;
+plant = ss(A,B,C,D);
+
+<span class="comment">%Discrete State Space Model - Using Continous Model, Use Derived Equation</span>
+<span class="comment">%to turn discritize the Model</span>
+
+T=0.0157;
+f = @(lambda) exp(A*lambda)*B; <span class="comment">%Use sympy.symbol for lambda in Python</span>
+a = 0; <span class="comment">% Lower limit</span>
+b = T; <span class="comment">% Upper limit</span>
+G = exp(A*T);
+H= integral(f, a, b); <span class="comment">% Use sympy.integrate in Python to integrate</span>
+
+
+<span class="comment">% %Discrete State Space Model -- Use to check HandCalculations</span>
+<span class="comment">% T=0.0157;</span>
+<span class="comment">% Sys_ss_d = c2d(plant,T,'zoh');</span>
+<span class="comment">% Sys_dd_ss_tf = tf(Sys_ss_d);</span>
+<span class="comment">% G = Sys_ss_d.A; %Variable Change</span>
+<span class="comment">% H = Sys_ss_d.B;</span>
+<span class="comment">% C = Sys_ss_d.C;</span>
+<span class="comment">% D = Sys_ss_d.D;</span>
+<span class="comment">% %step(Sys_dd_ss)</span>
+
+<span class="comment">%Simulation Variables</span>
+final_time = 5; <span class="comment">%Simulation Time</span>
+t = t_average_80;
+<span class="comment">%t = 0:T:final_time; % Sampling time ---&gt; mean(diff(t_average_50)) user ticker to continuosly update T in Python</span>
+num_steps = length(t); <span class="comment">% Number of time steps</span>
+<span class="comment">%u = 0.5*sin(3*t); % Input signal (example: sinusoidal input)</span>
+<span class="comment">%u = ones(size(t)) *(.27); % Input signal (Voltage)</span>
+u = motor_voltage_driving_average_80; <span class="comment">%REAL MOTOR VOLTAGE (input)</span>
+
+<span class="comment">%SYSTEM</span>
+x_sys = zeros(num_steps, size(G,1)); <span class="comment">% System state</span>
+<span class="comment">%y_sys = zeros(num_steps, 1); % System output</span>
+y_sys = accelX_driving_average_80; <span class="comment">%REAL SYSTEM Input(IMU reading)</span>
+
+<span class="comment">%OBSERVER</span>
+x_hat = zeros(num_steps, size(H,1)); <span class="comment">% Observer state</span>
+y_hat = zeros(num_steps,1); <span class="comment">% Observer state</span>
+L = .005; <span class="comment">%Manualy tune for now</span>
+
+<span class="keyword">for</span> k = 1:length(u)-1
+    <span class="comment">% %System States</span>
+    x_sys(k+1) = G*x_sys(k) + H*u(k);
+    <span class="comment">%y_sys(k) = C * x_sys(k) + D*u(k);</span>
+
+    <span class="comment">% Estimated States</span>
+    x_hat(k+1) = G*x_hat(k) + H*u(k) +  L*(y_sys(k) - y_hat(k));
+    y_hat(k) = C*x_hat(k) + D*u(k) ;
+<span class="keyword">end</span>
+
+
+figure(5);
+subplot(2,1,1);
+plot(t, y_sys, <span class="string">'b'</span>, t,y_hat,<span class="string">'--r'</span>,<span class="string">'LineWidth'</span>,2)
+xlabel(<span class="string">'Time [s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'Output [m/s^2]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+title(<span class="string">'IMU Output and Estimated Output [Acceleration] PWM 80%'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13);
+legend(<span class="string">'IMU Output'</span>, <span class="string">'Observer Output'</span>,<span class="string">'FontSize'</span>,20);
+axis([0 2 -0.5 5])
+grid <span class="string">on</span>;
+text(0.4, max(y_sys)*0.8, [<span class="string">'L = '</span>, num2str(L)], <span class="string">'FontSize'</span>, 15, <span class="string">'Color'</span>, <span class="string">'black'</span>);
+
+subplot(2,1,2);
+plot(t, x_sys, <span class="string">'b'</span>,t,x_hat,<span class="string">'--r'</span>,<span class="string">'LineWidth'</span>,2)
+xlabel(<span class="string">'Time [s]'</span>, <span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+ylabel(<span class="string">'State 1 [m/s]'</span>, <span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+title(<span class="string">'State 1, Estimated State 1, Velocity @ 80% PWM '</span>, <span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+legend(<span class="string">'Open-Loop State Observer'</span>, <span class="string">'Observer'</span>,<span class="string">'FontSize'</span>,20);
+axis([0 2 0 max(x_sys)+.1])
+grid <span class="string">on</span>;
+text(0.4, max(x_sys(:, 1))*0.8, [<span class="string">'L = '</span>, num2str(L)], <span class="string">'FontSize'</span>, 15, <span class="string">'Color'</span>, <span class="string">'black'</span>);
+</pre>
+<img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_06.png" alt=""> <h2 id="9">Loop over different values of L</h2>
+<pre class="codeinput">L_values = [0.001, 0.005, 0.05]; <span class="comment">% Add more values if needed</span>
+<span class="keyword">for</span> L_index = 1:length(L_values)
+    L = L_values(L_index);
+
+    <span class="comment">% Preallocate arrays for system and observer states</span>
+    x_sys = zeros(num_steps, size(G, 1)); <span class="comment">% System state</span>
+    y_sys = accelX_driving_average_80; <span class="comment">%REAL SYSTEM Output</span>
+    x_hat = zeros(num_steps, size(H, 1)); <span class="comment">% Observer state</span>
+    y_hat = zeros(num_steps, 1); <span class="comment">% Observer output</span>
+
+    <span class="comment">% Simulate the system</span>
+    <span class="keyword">for</span> k = 1:length(u)-1
+        <span class="comment">% System States</span>
+        x_sys(k+1, :) = G * x_sys(k, :)' + H * u(k);
+
+        <span class="comment">% Estimated States</span>
+        x_hat(k+1, :) = G * x_hat(k, :)' + H * u(k) + L * (y_sys(k) - y_hat(k));
+        y_hat(k) = C * x_hat(k, :)' + D * u(k);
+    <span class="keyword">end</span>
+
+    <span class="comment">% Plot results for this value of L</span>
+    figure(6);
+    subplot(2, length(L_values), L_index);
+    plot(t, y_sys, <span class="string">'b'</span>, t, y_hat, <span class="string">'--r'</span>, <span class="string">'LineWidth'</span>, 2);
+    xlabel(<span class="string">'Time [s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    ylabel(<span class="string">'Output [m/s^2]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    title([<span class="string">'L = '</span>, num2str(L)],<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    legend(<span class="string">'Accelerometer Output'</span>, <span class="string">'Estimated Output'</span>,<span class="string">'FontSize'</span>,20);
+    axis([0 2 -5 5]);
+    grid <span class="string">on</span>;
+    <span class="comment">%text(0.1, max(y_sys)*0.8, ['L = ', num2str(L)], 'FontSize', 10, 'Color', 'black');</span>
+
+    subplot(2, length(L_values), L_index + length(L_values));
+    plot(t, x_sys, <span class="string">'b'</span>, t, x_hat, <span class="string">'--r'</span>, <span class="string">'LineWidth'</span>, 2);
+    xlabel(<span class="string">'Time [s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    ylabel(<span class="string">'State 1 [m/s]'</span>,<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    title([<span class="string">'L = '</span>, num2str(L)],<span class="string">'FontWeight'</span>, <span class="string">'bold'</span>,<span class="string">'FontSize'</span>,20);
+    legend(<span class="string">'Open-Loop State Observer'</span>, <span class="string">'Observer'</span>,<span class="string">'FontSize'</span>,20);
+    axis([0 2 min(x_hat)-.1 max(x_hat)+0.1]);
+    grid <span class="string">on</span>;
+    <span class="comment">%text(0.1, max(x_sys(:, 1))*0.8, ['L = ', num2str(L)], 'FontSize', 10, 'Color', 'black');</span>
+<span class="keyword">end</span>
+</pre>
+<img vspace="5" hspace="5" src="AllMotorAvgData_106Capacitor_07.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024a</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%Users / anthonypeters / Documents / MATLAB / MSME / Project
+%/AllMotorAvgData_106Capacitor
+%Compile all Motor AVG Data
+% 106 Capacitor = 10 uF
+clc;clear all ;clear; clear figure;close all;
+%%%%% Longitudunal Control Simulation and System Indentification 
+
+%% Load Data
+directory = '/Users/anthonypeters/Documents/MATLAB/MSME/Project/106_Capacitor';
+baseFileName_50 = '106_UnitStep_PWM50_Test';
+baseFileName_70 = '106_UnitStep_PWM70_Test';
+baseFileName_80 = '106_UnitStep_PWM80_Test';
+baseFileName_90 = '106_UnitStep_PWM90_Test';
+baseFileName_100 = '106_UnitStep_PWM100_Test';
+files_50 = dir(fullfile(directory, [baseFileName_50, '*.csv']));
+files_70 = dir(fullfile(directory, [baseFileName_70, '*.csv']));
+files_80 = dir(fullfile(directory, [baseFileName_80, '*.csv']));
+files_90 = dir(fullfile(directory, [baseFileName_90, '*.csv']));
+files_100 = dir(fullfile(directory, [baseFileName_100, '*.csv']));
+AllData_50 = cell(1, numel(files_50));
+AllData_70 = cell(1, numel(files_70));
+AllData_80 = cell(1, numel(files_80));
+AllData_90 = cell(1, numel(files_90));
+AllData_100 = cell(1, numel(files_100));
+
+for i = 1:numel(files_50)
+    
+    filename_50 = fullfile(directory, files_50(i).name);
+    filename_70 = fullfile(directory, files_70(i).name);
+    filename_80 = fullfile(directory, files_80(i).name);
+    filename_90 = fullfile(directory, files_90(i).name);
+    filename_100 = fullfile(directory, files_100(i).name);
+
+    data_50 = readmatrix(filename_50); % Adjust loading method according to your file format
+    data_70 = readmatrix(filename_70); 
+    data_80 = readmatrix(filename_80); 
+    data_90 = readmatrix(filename_90); 
+    data_100 = readmatrix(filename_100); 
+
+    AllData_50{i} = data_50;
+    AllData_70{i} = data_70;
+    AllData_80{i} = data_80;
+    AllData_90{i} = data_90;
+    AllData_100{i} = data_100;
+    
+end
+
+%% Sort Data into Respective PWM Tests
+distance = 2.13; %m % = 6.9 feet
+speed_total_50 = 0 ;
+speed_total_70 = 0 ;
+speed_total_80 = 0 ;
+speed_total_90 = 0 ;
+speed_total_100 = 0 ;
+
+for i = 1:numel(files_50)
+
+    time_50{i} = AllData_50{i}(:,1);
+    time_70{i} = AllData_70{i}(:,1);
+    time_80{i} = AllData_80{i}(:,1);
+    time_90{i} = AllData_90{i}(:,1);
+    time_100{i} = AllData_100{i}(:,1);
+
+    start_signal_50{i} = AllData_50{i}(:,2);
+    start_signal_70{i} = AllData_70{i}(:,2);
+    start_signal_80{i} = AllData_80{i}(:,2);
+    start_signal_90{i} = AllData_90{i}(:,2);
+    start_signal_100{i} = AllData_100{i}(:,2);
+
+    motor_voltage_50{i} = AllData_50{i}(:,3);
+    motor_voltage_70{i} = AllData_70{i}(:,3);
+    motor_voltage_80{i} = AllData_80{i}(:,3);
+    motor_voltage_90{i} = AllData_90{i}(:,3);
+    motor_voltage_100{i} = AllData_100{i}(:,3);
+
+    accel_X_50{i} = AllData_50{i}(:,4);
+    accel_X_70{i} = AllData_70{i}(:,4);
+    accel_X_80{i} = AllData_80{i}(:,4);
+    accel_X_90{i} = AllData_90{i}(:,4);
+    accel_X_100{i} = AllData_100{i}(:,4);
+
+    accel_Y_50{i} = AllData_50{i}(:,5);
+    accel_Y_70{i} = AllData_70{i}(:,5);
+    accel_Y_80{i} = AllData_80{i}(:,5);
+    accel_Y_90{i} = AllData_90{i}(:,5);
+    accel_Y_100{i} = AllData_100{i}(:,5);
+
+    battery_voltage_50{i} = AllData_50{i}(:,6);
+    battery_voltage_70{i} = AllData_70{i}(:,6);
+    battery_voltage_80{i} = AllData_80{i}(:,6);
+    battery_voltage_90{i} = AllData_90{i}(:,6);
+    battery_voltage_100{i} = AllData_100{i}(:,6);
+
+    driving_50{i} = find(start_signal_50{i} == 1);
+    driving_70{i} = find(start_signal_70{i} == 1);
+    driving_80{i} = find(start_signal_80{i} == 1);
+    driving_90{i} = find(start_signal_90{i} == 1);
+    driving_100{i} = find(start_signal_100{i} == 1);
+
+    motor_voltage_driving_50{i} = motor_voltage_50{i}(driving_50{i},:);
+    motor_voltage_driving_70{i} = motor_voltage_70{i}(driving_70{i},:);
+    motor_voltage_driving_80{i} = motor_voltage_80{i}(driving_80{i},:);
+    motor_voltage_driving_90{i} = motor_voltage_90{i}(driving_90{i},:);
+    motor_voltage_driving_100{i} = motor_voltage_100{i}(driving_100{i},:);
+
+    accelX_driving_50{i} = accel_X_50{i}(driving_50{i},:);
+    accelX_driving_70{i} = accel_X_70{i}(driving_70{i},:);
+    accelX_driving_80{i} = accel_X_80{i}(driving_80{i},:);
+    accelX_driving_90{i} = accel_X_90{i}(driving_90{i},:);
+    accelX_driving_100{i} = accel_X_100{i}(driving_100{i},:);
+
+    accelY_driving_50{i} = accel_Y_50{i}(driving_50{i},:);
+    accelY_driving_70{i} = accel_Y_70{i}(driving_70{i},:);
+    accelY_driving_80{i} = accel_Y_80{i}(driving_80{i},:);
+    accelY_driving_90{i} = accel_Y_90{i}(driving_90{i},:);
+    accelY_driving_100{i} = accel_Y_100{i}(driving_100{i},:);
+
+    battery_voltage_driving_50{i} = battery_voltage_50{i}(driving_50{i},:);
+    battery_voltage_driving_70{i} = battery_voltage_70{i}(driving_70{i},:);
+    battery_voltage_driving_80{i} = battery_voltage_80{i}(driving_80{i},:);
+    battery_voltage_driving_90{i} = battery_voltage_90{i}(driving_90{i},:);
+    battery_voltage_driving_100{i} = battery_voltage_100{i}(driving_100{i},:);
+
+    Time_driving_50{i} = time_50{i}(driving_50{i},:);
+    Time_driving_70{i} = time_70{i}(driving_70{i},:);
+    Time_driving_80{i} = time_80{i}(driving_80{i},:);
+    Time_driving_90{i} = time_90{i}(driving_90{i},:);
+    Time_driving_100{i} = time_100{i}(driving_100{i},:);
+
+    t_50{i} = Time_driving_50{i} - Time_driving_50{i}(1);
+    t_70{i} = Time_driving_70{i} - Time_driving_70{i}(1);
+    t_80{i} = Time_driving_80{i} - Time_driving_80{i}(1);
+    t_90{i} = Time_driving_90{i} - Time_driving_90{i}(1);
+    t_100{i} = Time_driving_100{i} - Time_driving_100{i}(1);
+
+end
+
+%% Calculate Averages of each PWM Tests
+
+%%%ReSizeMatrixes to take averages
+motor_voltage_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_50));
+motor_voltage_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_50));
+motor_voltage_driving_Sum_50 = zeros(motor_voltage_driving_maxRows_50, motor_voltage_driving_maxCols_50);
+motor_voltage_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_70));
+motor_voltage_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_70));
+motor_voltage_driving_Sum_70 = zeros(motor_voltage_driving_maxRows_70, motor_voltage_driving_maxCols_70);
+motor_voltage_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_80));
+motor_voltage_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_80));
+motor_voltage_driving_Sum_80 = zeros(motor_voltage_driving_maxRows_80, motor_voltage_driving_maxCols_80);
+motor_voltage_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_90));
+motor_voltage_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_90));
+motor_voltage_driving_Sum_90 = zeros(motor_voltage_driving_maxRows_90, motor_voltage_driving_maxCols_90);
+motor_voltage_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), motor_voltage_driving_100));
+motor_voltage_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), motor_voltage_driving_100));
+motor_voltage_driving_Sum_100 = zeros(motor_voltage_driving_maxRows_100, motor_voltage_driving_maxCols_100);
+
+accelX_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), accelX_driving_50));
+accelX_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), accelX_driving_50));
+accelX_driving_Sum_50 = zeros(accelX_driving_maxRows_50, accelX_driving_maxCols_50);
+accelX_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), accelX_driving_70));
+accelX_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), accelX_driving_70));
+accelX_driving_Sum_70 = zeros(accelX_driving_maxRows_70, accelX_driving_maxCols_70);
+accelX_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), accelX_driving_80));
+accelX_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), accelX_driving_80));
+accelX_driving_Sum_80 = zeros(accelX_driving_maxRows_80, accelX_driving_maxCols_80);
+accelX_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), accelX_driving_90));
+accelX_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), accelX_driving_90));
+accelX_driving_Sum_90 = zeros(accelX_driving_maxRows_90, accelX_driving_maxCols_90);
+accelX_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), accelX_driving_100));
+accelX_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), accelX_driving_100));
+accelX_driving_Sum_100 = zeros(accelX_driving_maxRows_100, accelX_driving_maxCols_100);
+
+accelY_driving_maxRows_50 = max(cellfun(@(x) size(x, 1), accelY_driving_50));
+accelY_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), accelY_driving_50));
+accelY_driving_Sum_50 = zeros(accelY_driving_maxRows_50, accelY_driving_maxCols_50);
+accelY_driving_maxRows_70 = max(cellfun(@(x) size(x, 1), accelY_driving_70));
+accelY_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), accelY_driving_70));
+accelY_driving_Sum_70 = zeros(accelY_driving_maxRows_70, accelY_driving_maxCols_70);
+accelY_driving_maxRows_80 = max(cellfun(@(x) size(x, 1), accelY_driving_80));
+accelY_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), accelY_driving_80));
+accelY_driving_Sum_80 = zeros(accelY_driving_maxRows_80, accelY_driving_maxCols_80);
+accelY_driving_maxRows_90 = max(cellfun(@(x) size(x, 1), accelY_driving_90));
+accelY_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), accelY_driving_90));
+accelY_driving_Sum_90 = zeros(accelY_driving_maxRows_90, accelY_driving_maxCols_90);
+accelY_driving_maxRows_100 = max(cellfun(@(x) size(x, 1), accelY_driving_100));
+accelY_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), accelY_driving_100));
+accelY_driving_Sum_100 = zeros(accelY_driving_maxRows_100, accelY_driving_maxCols_100);
+
+battery_voltage_driving_maxRows_50 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_50));
+battery_voltage_driving_maxCols_50 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_50));
+battery_voltage_driving_Sum_50 = zeros(battery_voltage_driving_maxRows_50, battery_voltage_driving_maxCols_50);
+battery_voltage_driving_maxRows_70 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_70));
+battery_voltage_driving_maxCols_70 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_70));
+battery_voltage_driving_Sum_70 = zeros(battery_voltage_driving_maxRows_70, battery_voltage_driving_maxCols_70);
+battery_voltage_driving_maxRows_80 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_80));
+battery_voltage_driving_maxCols_80 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_80));
+battery_voltage_driving_Sum_80 = zeros(battery_voltage_driving_maxRows_80, battery_voltage_driving_maxCols_80);
+battery_voltage_driving_maxRows_90 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_90));
+battery_voltage_driving_maxCols_90 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_90));
+battery_voltage_driving_Sum_90 = zeros(battery_voltage_driving_maxRows_90, battery_voltage_driving_maxCols_90);
+battery_voltage_driving_maxRows_100 = max(cellfun(@(x) size(x, 1),battery_voltage_driving_100));
+battery_voltage_driving_maxCols_100 = max(cellfun(@(x) size(x, 2), battery_voltage_driving_100));
+battery_voltage_driving_Sum_100 = zeros(battery_voltage_driving_maxRows_100, battery_voltage_driving_maxCols_100);
+
+t_maxRows_50 = max(cellfun(@(x) size(x, 1),t_50));
+t_maxCols_50 = max(cellfun(@(x) size(x, 2), t_50));
+t_Sum_50 = zeros(t_maxRows_50, t_maxCols_50);% Initialize a variable to store the total sum
+t_maxRows_70 = max(cellfun(@(x) size(x, 1),t_70));
+t_maxCols_70 = max(cellfun(@(x) size(x, 2), t_70));
+t_Sum_70 = zeros(t_maxRows_70, t_maxCols_70);% Initialize a variable to store the total sum
+t_maxRows_70 = max(cellfun(@(x) size(x, 1),t_70));
+t_maxCols_70 = max(cellfun(@(x) size(x, 2), t_70));
+t_Sum_70 = zeros(t_maxRows_70, t_maxCols_70);% Initialize a variable to store the total sum
+t_maxRows_80 = max(cellfun(@(x) size(x, 1),t_80));
+t_maxCols_80 = max(cellfun(@(x) size(x, 2), t_80));
+t_Sum_80 = zeros(t_maxRows_80, t_maxCols_80);% Initialize a variable to store the total sum
+t_maxRows_90 = max(cellfun(@(x) size(x, 1),t_90));
+t_maxCols_90 = max(cellfun(@(x) size(x, 2), t_90));
+t_Sum_90 = zeros(t_maxRows_90, t_maxCols_90);% Initialize a variable to store the total sum
+t_maxRows_100 = max(cellfun(@(x) size(x, 1),t_100));
+t_maxCols_100 = max(cellfun(@(x) size(x, 2), t_100));
+t_Sum_100 = zeros(t_maxRows_100, t_maxCols_100);% Initialize a variable to store the total sum
+
+for i = 1:numel(files_50)
+%
+ motor_voltage_driving_Data_50 = imresize(motor_voltage_driving_50{i}, [motor_voltage_driving_maxRows_50, motor_voltage_driving_maxCols_50]);
+ motor_voltage_driving_Sum_50 = motor_voltage_driving_Sum_50 + motor_voltage_driving_Data_50;
+ motor_voltage_driving_Data_70 = imresize(motor_voltage_driving_70{i}, [motor_voltage_driving_maxRows_70, motor_voltage_driving_maxCols_70]);
+ motor_voltage_driving_Sum_70 = motor_voltage_driving_Sum_70 + motor_voltage_driving_Data_70;
+ motor_voltage_driving_Data_80 = imresize(motor_voltage_driving_80{i}, [motor_voltage_driving_maxRows_80, motor_voltage_driving_maxCols_80]);
+ motor_voltage_driving_Sum_80 = motor_voltage_driving_Sum_80 + motor_voltage_driving_Data_80;
+ motor_voltage_driving_Data_90 = imresize(motor_voltage_driving_90{i}, [motor_voltage_driving_maxRows_90, motor_voltage_driving_maxCols_90]);
+ motor_voltage_driving_Sum_90 = motor_voltage_driving_Sum_90 + motor_voltage_driving_Data_90;
+ motor_voltage_driving_Data_100 = imresize(motor_voltage_driving_100{i}, [motor_voltage_driving_maxRows_100, motor_voltage_driving_maxCols_100]);
+ motor_voltage_driving_Sum_100 = motor_voltage_driving_Sum_100 + motor_voltage_driving_Data_100;
+
+%
+ accelX_driving_Data_50 = imresize(accelX_driving_50{i}, [accelX_driving_maxRows_50, accelX_driving_maxCols_50]);
+ accelX_driving_Sum_50 = accelX_driving_Sum_50 + accelX_driving_Data_50;
+ accelY_driving_Data_50 = imresize(accelX_driving_50{i}, [accelY_driving_maxRows_50, accelY_driving_maxCols_50]);
+ accelY_driving_Sum_50 = accelY_driving_Sum_50 + accelY_driving_Data_50;
+ 
+ accelX_driving_Data_70 = imresize(accelX_driving_70{i}, [accelX_driving_maxRows_70, accelX_driving_maxCols_70]);
+ accelX_driving_Sum_70 = accelX_driving_Sum_70 + accelX_driving_Data_70;
+ accelY_driving_Data_70 = imresize(accelX_driving_70{i}, [accelY_driving_maxRows_70, accelY_driving_maxCols_70]);
+ accelY_driving_Sum_70 = accelY_driving_Sum_70 + accelY_driving_Data_70;
+ 
+ accelX_driving_Data_80 = imresize(accelX_driving_80{i}, [accelX_driving_maxRows_80, accelX_driving_maxCols_80]);
+ accelX_driving_Sum_80 = accelX_driving_Sum_80 + accelX_driving_Data_80;
+ accelY_driving_Data_80 = imresize(accelX_driving_80{i}, [accelY_driving_maxRows_80, accelY_driving_maxCols_80]);
+ accelY_driving_Sum_80 = accelY_driving_Sum_80 + accelY_driving_Data_80;
+ 
+ accelX_driving_Data_90 = imresize(accelX_driving_90{i}, [accelX_driving_maxRows_90, accelX_driving_maxCols_90]);
+ accelX_driving_Sum_90 = accelX_driving_Sum_90 + accelX_driving_Data_90;
+ accelY_driving_Data_90 = imresize(accelX_driving_90{i}, [accelY_driving_maxRows_90, accelY_driving_maxCols_90]);
+ accelY_driving_Sum_90 = accelY_driving_Sum_90 + accelY_driving_Data_90;
+ 
+ accelX_driving_Data_100 = imresize(accelX_driving_100{i}, [accelX_driving_maxRows_100, accelX_driving_maxCols_100]);
+ accelX_driving_Sum_100 = accelX_driving_Sum_100 + accelX_driving_Data_100;
+ accelY_driving_Data_100 = imresize(accelX_driving_100{i}, [accelY_driving_maxRows_100, accelY_driving_maxCols_100]);
+ accelY_driving_Sum_100 = accelY_driving_Sum_100 + accelY_driving_Data_100;
+%
+ battery_voltage_driving_Data_50 = imresize(battery_voltage_driving_50{i}, [battery_voltage_driving_maxRows_50, battery_voltage_driving_maxCols_50]);
+ battery_voltage_driving_Sum_50 = battery_voltage_driving_Sum_50 + battery_voltage_driving_Data_50;
+ battery_voltage_driving_Data_70 = imresize(battery_voltage_driving_70{i}, [battery_voltage_driving_maxRows_70, battery_voltage_driving_maxCols_70]);
+ battery_voltage_driving_Sum_70 = battery_voltage_driving_Sum_70 + battery_voltage_driving_Data_70;
+ battery_voltage_driving_Data_80 = imresize(battery_voltage_driving_80{i}, [battery_voltage_driving_maxRows_80, battery_voltage_driving_maxCols_80]);
+ battery_voltage_driving_Sum_80 = battery_voltage_driving_Sum_80 + battery_voltage_driving_Data_80;
+ battery_voltage_driving_Data_90 = imresize(battery_voltage_driving_90{i}, [battery_voltage_driving_maxRows_90, battery_voltage_driving_maxCols_90]);
+ battery_voltage_driving_Sum_90 = battery_voltage_driving_Sum_90 + battery_voltage_driving_Data_90;
+ battery_voltage_driving_Data_100 = imresize(battery_voltage_driving_100{i}, [battery_voltage_driving_maxRows_100, battery_voltage_driving_maxCols_100]);
+ battery_voltage_driving_Sum_100 = battery_voltage_driving_Sum_100 + battery_voltage_driving_Data_100;
+
+ t_Data_50 = imresize(t_50{i}, [t_maxRows_50, t_maxCols_50]);
+ t_Sum_50 = t_Sum_50 + t_Data_50;
+ t_Data_70 = imresize(t_70{i}, [t_maxRows_70, t_maxCols_70]);
+ t_Sum_70 = t_Sum_70 + t_Data_70;
+ t_Data_80 = imresize(t_80{i}, [t_maxRows_80, t_maxCols_80]);
+ t_Sum_80 = t_Sum_80 + t_Data_80;
+ t_Data_90 = imresize(t_90{i}, [t_maxRows_90, t_maxCols_90]);
+ t_Sum_90 = t_Sum_90 + t_Data_90;
+ t_Data_100 = imresize(t_100{i}, [t_maxRows_100, t_maxCols_100]);
+ t_Sum_100 = t_Sum_100 + t_Data_100;
+
+ speed_50{i} = distance / max(t_50{i}); %m/s
+ speed_total_50 =(speed_total_50 +speed_50{i}) ;
+ speed_70{i} = distance / max(t_70{i}); 
+ speed_total_70 = (speed_total_70 + speed_70{i});
+ speed_80{i} = distance / max(t_80{i}); 
+ speed_total_80 = (speed_total_80 + speed_80{i});
+ speed_90{i} = distance / max(t_90{i}); 
+ speed_total_90 = (speed_total_90 + speed_90{i});
+ speed_100{i} = distance / max(t_100{i}); 
+ speed_total_100 = (speed_total_100 + speed_100{i});
+
+end
+%PWM 50
+motor_voltage_driving_average_50 = motor_voltage_driving_Sum_50 / i;
+accelX_driving_average_50 =accelX_driving_Sum_50 / i;
+accelY_driving_average_50 =accelY_driving_Sum_50 / i;
+battery_voltage_driving_average_50 = battery_voltage_driving_Sum_50 /i;
+t_average_50 = t_Sum_50 / i;
+speed_avg_50 = speed_total_50 /i ;
+
+%PWM 70
+motor_voltage_driving_average_70 = motor_voltage_driving_Sum_70 / i;
+accelX_driving_average_70 = accelX_driving_Sum_70 / i;
+accelY_driving_average_70 = accelY_driving_Sum_70 / i;
+battery_voltage_driving_average_70 = battery_voltage_driving_Sum_70 / i;
+t_average_70 = t_Sum_70 / i;
+speed_avg_70 = speed_total_70 / i;
+
+%PWM 80
+motor_voltage_driving_average_80 = motor_voltage_driving_Sum_80 / i;
+accelX_driving_average_80 = accelX_driving_Sum_80 / i;
+accelY_driving_average_80 = accelY_driving_Sum_80 / i;
+battery_voltage_driving_average_80 = battery_voltage_driving_Sum_80 / i;
+t_average_80 = t_Sum_80 / i;
+speed_avg_80 = speed_total_80 / i;
+
+%PWM 90
+motor_voltage_driving_average_90 = motor_voltage_driving_Sum_90 / i;
+accelX_driving_average_90 = accelX_driving_Sum_90 / i;
+accelY_driving_average_90 = accelY_driving_Sum_90 / i;
+battery_voltage_driving_average_90 = battery_voltage_driving_Sum_90 / i;
+t_average_90 = t_Sum_90 / i;
+speed_avg_90 = speed_total_90 / i;
+
+%PWM 100
+motor_voltage_driving_average_100 = motor_voltage_driving_Sum_100 / i;
+accelX_driving_average_100 = accelX_driving_Sum_100 / i;
+accelY_driving_average_100 = accelY_driving_Sum_100 / i;
+battery_voltage_driving_average_100 = battery_voltage_driving_Sum_100 / i;
+t_average_100 = t_Sum_100 / i;
+speed_avg_100 = speed_total_100 / i;
+
+%% Plot Car Response
+figure(1);
+subplot(2, 1, 1);hold off;
+plot(t_average_50 , motor_voltage_driving_average_50,'b','LineWidth', 2);  %Voltage Response
+hold on;
+plot(t_average_70, motor_voltage_driving_average_70,'g','LineWidth', 2); %hold on;
+plot(t_average_80, motor_voltage_driving_average_80,'r','LineWidth', 2); %hold on;
+plot(t_average_90, motor_voltage_driving_average_90,'c','LineWidth', 2);% hold on;
+plot(t_average_100, motor_voltage_driving_average_100,'m','LineWidth', 2); %hold on;
+title('Avg Motor Voltage (10 uF)', 'FontWeight', 'bold','FontSize',20);
+xlabel('Avg Time [s]','FontWeight', 'bold','FontSize',20)
+ylabel('Avg Voltage [V]','FontWeight', 'bold','FontSize',20)
+grid on
+legend('50% PWM','70% PWM','80% PWM','90% PWM', '100% PWM','Fontsize',20)
+
+subplot(2, 1, 2);hold off;
+plot(t_average_50 ,accelX_driving_average_50, 'b'); %Acceleration Response
+hold on;
+plot(t_average_70, accelX_driving_average_70, 'g');%hold on;
+plot(t_average_80, accelX_driving_average_80, 'r');%hold on;
+plot(t_average_90, accelX_driving_average_90, 'c');%hold on;
+plot(t_average_100, accelX_driving_average_100, 'm');%hold on;
+title('Avg. Foward Car Acceleration with (10 uF)', 'FontWeight', 'bold','FontSize',20);
+xlabel('Avg. Time [s]','FontWeight','bold','FontSize',20)
+ylabel('Avg. Acceleration [m/s^2]','FontWeight','bold','FontSize',20)
+legend('50% PWM','70% PWM','80% PWM','90% PWM', '100% PWM','FontSize',20)
+grid on
+
+
+%% Formulate Systems T(s)  REPLACE_WITH_DASH_DASH> Alpha / (Tau*s + 1) => First Order Dynamics
+% Alpha = Steady State Speed / V_ss 
+% Find Time constant Tau  -> Motor to reach 63% of its steady state value
+% REPLACE_WITH_DASH_DASH Speed
+pwm = [50 , 70 , 80 , 90 , 100] ;
+%FIND Steady State Voltage
+
+%Take the last 80% of Motor Voltage and calculate Avg Steady State Value
+start_index_50 = ceil(0.8 * motor_voltage_driving_maxRows_50);
+start_index_70 = ceil(0.8 * motor_voltage_driving_maxRows_70);
+start_index_80 = ceil(0.8 * motor_voltage_driving_maxRows_80);
+start_index_90 = ceil(0.8 * motor_voltage_driving_maxRows_90);
+start_index_100 = ceil(0.8 * motor_voltage_driving_maxRows_100);
+
+last_80_percent_50 = motor_voltage_driving_average_50(start_index_50:end);
+last_80_percent_70 = motor_voltage_driving_average_70(start_index_70:end);
+last_80_percent_80 = motor_voltage_driving_average_80(start_index_80:end);
+last_80_percent_90 = motor_voltage_driving_average_90(start_index_90:end);
+last_80_percent_100 = motor_voltage_driving_average_100(start_index_100:end);
+
+V_ss_50 = mean(last_80_percent_50);
+V_ss_70  = mean(last_80_percent_70);
+V_ss_80 = mean(last_80_percent_80);
+V_ss_90 = mean(last_80_percent_90);
+V_ss_100 = mean(last_80_percent_100);
+
+V_ss = [V_ss_50,V_ss_70,V_ss_80,V_ss_90,V_ss_100];
+
+% Find Steady State Speed REPLACE_WITH_DASH_DASHFrom Integrated Values
+%Integrate Accel X
+Vel_Integrate_50 = cumsum([diff(t_average_50) ; 0].* accelX_driving_average_50) ;
+Vel_Integrate_70 = cumsum([diff(t_average_70) ; 0].* accelX_driving_average_70) ;
+Vel_Integrate_80 = cumsum([diff(t_average_80) ; 0].* accelX_driving_average_80) ;
+Vel_Integrate_90 = cumsum([diff(t_average_90) ; 0].* accelX_driving_average_90) ;
+Vel_Integrate_100 = cumsum([diff(t_average_100) ; 0].* accelX_driving_average_100) ;
+
+%Take the last 80% of Motor Voltage and calculate Avg Steady State Value
+Velocity_last_80_percent_50 = Vel_Integrate_50(start_index_50:end) ;
+Velocity_last_80_percent_70 = Vel_Integrate_70(start_index_70:end) ;
+Velocity_last_80_percent_80 = Vel_Integrate_80(start_index_80:end) ;
+Velocity_last_80_percent_90 = Vel_Integrate_90(start_index_90:end) ;
+Velocity_last_80_percent_100 = Vel_Integrate_100(start_index_100:end) ;
+
+%Calculate Steady State by taking the avg of the last 80% Values
+Velocity_SS_50 = mean (Velocity_last_80_percent_50);
+Velocity_SS_70 = mean (Velocity_last_80_percent_70);
+Velocity_SS_80 = mean (Velocity_last_80_percent_80);
+Velocity_SS_90 = mean (Velocity_last_80_percent_90);
+Velocity_SS_100 = mean (Velocity_last_80_percent_100);
+
+
+%Find Velocity at Tau
+Velocity_tau_50 = 0.632*Velocity_SS_50;
+Velocity_tau_70 = 0.632*Velocity_SS_70;
+Velocity_tau_80 = 0.632*Velocity_SS_80;
+Velocity_tau_90 = 0.632*Velocity_SS_90;
+Velocity_tau_100 = 0.632*Velocity_SS_100;
+
+
+
+%Data Processing
+Vel_Integrate_50_unique = unique(Vel_Integrate_50);
+Vel_Integrate_70_unique = unique(Vel_Integrate_70);
+Vel_Integrate_80_unique = unique(Vel_Integrate_80);
+Vel_Integrate_90_unique = unique(Vel_Integrate_90);
+Vel_Integrate_100_unique = unique(Vel_Integrate_100);
+
+t_average_50_removed = t_average_50(1:end-1, :);
+t_average_70_removed = t_average_70(1:end-1, :);
+t_average_80_removed = t_average_80(1:end-1, :);
+t_average_90_removed = t_average_90(1:end-1, :);
+t_average_100_removed = t_average_100(1:end-1, :);
+
+%Find Tau
+tau_50 = interp1(Vel_Integrate_50_unique, t_average_50_removed, Velocity_tau_50, 'linear'); %[s]
+tau_70 = interp1(Vel_Integrate_70_unique, t_average_70_removed, Velocity_tau_70, 'linear'); %[s]
+tau_80 = interp1(Vel_Integrate_80_unique, t_average_80_removed, Velocity_tau_80, 'linear'); %[s]
+tau_90 = interp1(Vel_Integrate_90_unique, t_average_90_removed, Velocity_tau_90, 'linear'); %[s]
+tau_100 = interp1(Vel_Integrate_100_unique, t_average_100_removed, Velocity_tau_100, 'linear'); %[s]
+
+tau = [tau_50 , tau_70 ,tau_80, tau_90, tau_100];
+
+% Find Alpha (Estimated Speed with IMU) - so Bad
+% alpha_50 = Velocity_SS_50 / V_ss_50 ; 
+% alpha_70 = Velocity_SS_70 / V_ss_70 ;
+% alpha_80 = Velocity_SS_80 / V_ss_80 ;
+% alpha_90 = Velocity_SS_90 / V_ss_90 ;
+% alpha_100 = Velocity_SS_100 / V_ss_100 ; hold off
+
+% %Find Alpha (HandCalculation)
+alpha_50 = speed_avg_50 / V_ss_50 ; 
+alpha_70 = speed_avg_70 / V_ss_70 ;
+alpha_80 = speed_avg_80 / V_ss_80 ;
+alpha_90 = speed_avg_90 / V_ss_90 ;
+alpha_100 = speed_avg_100 / V_ss_100 ; hold off
+
+alpha = [alpha_50, alpha_70, alpha_80, alpha_90, alpha_100] ;
+
+
+figure(2); 
+plot(t_average_50, Vel_Integrate_50,'LineWidth', 2);hold on
+plot(t_average_70, Vel_Integrate_70,'LineWidth', 2);hold on
+plot(t_average_80, Vel_Integrate_80,'LineWidth', 2);hold on
+plot(t_average_90, Vel_Integrate_90,'LineWidth', 2);hold on
+plot(t_average_100, Vel_Integrate_100,'LineWidth', 2);hold on
+
+
+title("Car Velocity - Integrated by AccelX Data",'FontSize',20);
+xlabel('Time [s]','FontWeight', 'bold','FontSize',20); 
+ylabel('Speed [m/s]','FontWeight', 'bold','FontSize',20);
+legend('Velocity at PWM 50', 'Velocity at PWM 70', 'Velocity at PWM 80', 'Velocity at PWM 90', 'Velocity at PWM 100','FontSize',20)
+grid on
+
+
+figure(3); %Tau
+
+mean_alpha = mean(alpha);
+mean_tau =mean(tau);
+%mean_tau = .12 ;
+
+subplot(2,1,1); %Plot alphas and Alpha Mean 
+plot(pwm, alpha,'x','LineWidth',2); hold on
+y_limits = ylim; 
+plot(xlim, [mean_alpha, mean_alpha], 'REPLACE_WITH_DASH_DASHg', 'LineWidth', 2); hold off% Plot the mean line
+ylim(y_limits); % Restore Ylim
+title('Alpha = Speed_S_S / V_S_S','FontSize',20);
+xlabel('PWM [%]','FontWeight', 'bold','FontSize',20); 
+ylabel('Alpha - [ m/(s*V) ]','FontWeight', 'bold','FontSize',20); 
+legend('Alpha',"Alpha Mean",'FontSize',20) %%% Outlier in PWM 50 alpha check Data Aquistion
+text(60, mean_alpha+.01, ['Mean = ', num2str(mean_alpha)], 'FontSize', 15, 'Color', 'black');
+grid on
+
+subplot(2,1,2); %%Plot Tau and Tau Mean
+plot(pwm, tau,'o','LineWidth',2);hold on
+y_limits = ylim; 
+plot(xlim, [mean_tau, mean_tau], 'REPLACE_WITH_DASH_DASHg', 'LineWidth', 2); hold off% Plot the mean line
+ylim(y_limits);
+title('Tau = t @ .632*Velocity_S_S','FontSize',20);
+ylabel('Tau [.632*Velocity_s_s]','FontWeight', 'bold','FontSize',20);
+xlabel('PWM [%]','FontWeight', 'bold','FontSize',20);
+legend('Tau',"Tau Mean",'FontSize',20)
+text(60, mean_tau+.01, ['Mean = ', num2str(mean_tau)], 'FontSize', 15, 'Color', 'black');
+grid on
+
+%% Fit a line to find Voltage to PWM realation equation REPLACE_WITH_DASH_DASH apply pwm for voltage output
+v = [0 , V_ss_50, V_ss_70, V_ss_80 ,V_ss_90,V_ss_100];
+%v = [ 0 , .2375, .3317 , .3775 , .4262, .4709] ; %Graphical Estimate
+pwm = [0, 50 , 70 , 80 , 90 , 100] ;
+figure(4);
+plot(pwm,v,'o','MarkerSize',10,...
+    'MarkerEdgeColor','red',...
+    'MarkerFaceColor',[1 .6 .6])
+title('Voltage vs PWM','FontWeight', 'bold','FontSize',20);
+ylabel('Voltage [V]','FontWeight', 'bold','FontSize',20);
+xlabel('PWM%','FontWeight', 'bold','FontSize',20)
+grid on
+
+%% Discrete State Space  & Observer Design 
+%Continous State Space Model - Used for Discrete Model
+
+%mean_tau = .12 ; %%CHANGE TAU TO Fit Velocity!
+%mean_alpha = .954 ; %%CHANGE TAU TO Fit Velocity!
+A = - 1/ mean_tau;
+B = mean_alpha / mean_tau;
+C = A;
+D = B;
+plant = ss(A,B,C,D);
+
+%Discrete State Space Model - Using Continous Model, Use Derived Equation
+%to turn discritize the Model
+
+T=0.0157;
+f = @(lambda) exp(A*lambda)*B; %Use sympy.symbol for lambda in Python
+a = 0; % Lower limit
+b = T; % Upper limit
+G = exp(A*T);
+H= integral(f, a, b); % Use sympy.integrate in Python to integrate
+
+
+% %Discrete State Space Model REPLACE_WITH_DASH_DASH Use to check HandCalculations
+% T=0.0157;
+% Sys_ss_d = c2d(plant,T,'zoh');
+% Sys_dd_ss_tf = tf(Sys_ss_d);
+% G = Sys_ss_d.A; %Variable Change
+% H = Sys_ss_d.B;
+% C = Sys_ss_d.C;
+% D = Sys_ss_d.D;
+% %step(Sys_dd_ss) 
+
+%Simulation Variables
+final_time = 5; %Simulation Time
+t = t_average_80;
+%t = 0:T:final_time; % Sampling time REPLACE_WITH_DASH_DASH-> mean(diff(t_average_50)) user ticker to continuosly update T in Python
+num_steps = length(t); % Number of time steps
+%u = 0.5*sin(3*t); % Input signal (example: sinusoidal input)
+%u = ones(size(t)) *(.27); % Input signal (Voltage)
+u = motor_voltage_driving_average_80; %REAL MOTOR VOLTAGE (input)
+
+%SYSTEM 
+x_sys = zeros(num_steps, size(G,1)); % System state
+%y_sys = zeros(num_steps, 1); % System output 
+y_sys = accelX_driving_average_80; %REAL SYSTEM Input(IMU reading)
+
+%OBSERVER
+x_hat = zeros(num_steps, size(H,1)); % Observer state
+y_hat = zeros(num_steps,1); % Observer state
+L = .005; %Manualy tune for now
+
+for k = 1:length(u)-1
+    % %System States
+    x_sys(k+1) = G*x_sys(k) + H*u(k); 
+    %y_sys(k) = C * x_sys(k) + D*u(k);
+
+    % Estimated States
+    x_hat(k+1) = G*x_hat(k) + H*u(k) +  L*(y_sys(k) - y_hat(k));
+    y_hat(k) = C*x_hat(k) + D*u(k) ;
+end
+
+
+figure(5);
+subplot(2,1,1);
+plot(t, y_sys, 'b', t,y_hat,'REPLACE_WITH_DASH_DASHr','LineWidth',2)
+xlabel('Time [s]','FontWeight', 'bold','FontSize',20);
+ylabel('Output [m/s^2]','FontWeight', 'bold','FontSize',20);
+title('IMU Output and Estimated Output [Acceleration] PWM 80%','FontWeight', 'bold','FontSize',13);
+legend('IMU Output', 'Observer Output','FontSize',20);
+axis([0 2 -0.5 5])
+grid on;
+text(0.4, max(y_sys)*0.8, ['L = ', num2str(L)], 'FontSize', 15, 'Color', 'black');
+
+subplot(2,1,2);
+plot(t, x_sys, 'b',t,x_hat,'REPLACE_WITH_DASH_DASHr','LineWidth',2)
+xlabel('Time [s]', 'FontWeight', 'bold','FontSize',20);
+ylabel('State 1 [m/s]', 'FontWeight', 'bold','FontSize',20);
+title('State 1, Estimated State 1, Velocity @ 80% PWM ', 'FontWeight', 'bold','FontSize',20);
+legend('Open-Loop State Observer', 'Observer','FontSize',20);
+axis([0 2 0 max(x_sys)+.1])
+grid on;
+text(0.4, max(x_sys(:, 1))*0.8, ['L = ', num2str(L)], 'FontSize', 15, 'Color', 'black');
+
+%% Loop over different values of L
+L_values = [0.001, 0.005, 0.05]; % Add more values if needed
+for L_index = 1:length(L_values)
+    L = L_values(L_index);
+    
+    % Preallocate arrays for system and observer states
+    x_sys = zeros(num_steps, size(G, 1)); % System state
+    y_sys = accelX_driving_average_80; %REAL SYSTEM Output
+    x_hat = zeros(num_steps, size(H, 1)); % Observer state
+    y_hat = zeros(num_steps, 1); % Observer output
+    
+    % Simulate the system
+    for k = 1:length(u)-1
+        % System States
+        x_sys(k+1, :) = G * x_sys(k, :)' + H * u(k); 
+        
+        % Estimated States
+        x_hat(k+1, :) = G * x_hat(k, :)' + H * u(k) + L * (y_sys(k) - y_hat(k));
+        y_hat(k) = C * x_hat(k, :)' + D * u(k);
+    end
+
+    % Plot results for this value of L
+    figure(6);
+    subplot(2, length(L_values), L_index);
+    plot(t, y_sys, 'b', t, y_hat, 'REPLACE_WITH_DASH_DASHr', 'LineWidth', 2);
+    xlabel('Time [s]','FontWeight', 'bold','FontSize',20);
+    ylabel('Output [m/s^2]','FontWeight', 'bold','FontSize',20);
+    title(['L = ', num2str(L)],'FontWeight', 'bold','FontSize',20);
+    legend('Accelerometer Output', 'Estimated Output','FontSize',20);
+    axis([0 2 -5 5]);
+    grid on;
+    %text(0.1, max(y_sys)*0.8, ['L = ', num2str(L)], 'FontSize', 10, 'Color', 'black');
+
+    subplot(2, length(L_values), L_index + length(L_values));
+    plot(t, x_sys, 'b', t, x_hat, 'REPLACE_WITH_DASH_DASHr', 'LineWidth', 2);
+    xlabel('Time [s]','FontWeight', 'bold','FontSize',20);
+    ylabel('State 1 [m/s]','FontWeight', 'bold','FontSize',20);
+    title(['L = ', num2str(L)],'FontWeight', 'bold','FontSize',20);
+    legend('Open-Loop State Observer', 'Observer','FontSize',20);
+    axis([0 2 min(x_hat)-.1 max(x_hat)+0.1]);
+    grid on;
+    %text(0.1, max(x_sys(:, 1))*0.8, ['L = ', num2str(L)], 'FontSize', 10, 'Color', 'black');
+end
+
+
+
+
+
+
+
+
+
+
+
+##### SOURCE END #####
+-->
+</body>
+</html>
